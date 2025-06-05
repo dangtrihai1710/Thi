@@ -58,7 +58,7 @@ namespace Thi.Data
                     MaSV = "2280600791",
                     HoTen = "Đặng Trí Hải",
                     GioiTinh = "Nam",
-                    NgaySinh = new DateTime(2004, 17, 10),
+                    NgaySinh = new DateTime(2004, 10, 17), // Sửa lại thứ tự: năm, tháng, ngày
                     Hinh = "/Content/images/sv1.jpg",
                     MaNganh = "CNTT"
                 },
