@@ -1,5 +1,4 @@
-﻿// Thi/Models/ApplicationDbContext.cs - Đã sửa đường dẫn ảnh
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Thi.Models;
 
 namespace Thi.Data
@@ -24,6 +23,11 @@ namespace Thi.Data
             // Configure composite key for ChiTietDangKy
             modelBuilder.Entity<ChiTietDangKy>()
                 .HasKey(ct => new { ct.MaDK, ct.MaHP });
+
+            // Configure column types and lengths
+            modelBuilder.Entity<SinhVien>()
+                .Property(s => s.Hinh)
+                .HasMaxLength(200); // Tăng độ dài cột Hinh
 
             // Configure relationships
             modelBuilder.Entity<SinhVien>()
@@ -59,7 +63,7 @@ namespace Thi.Data
                     HoTen = "Đặng Trí Hải",
                     GioiTinh = "Nam",
                     NgaySinh = new DateTime(2004, 10, 17),
-                    Hinh = "/images/sv1.jpg", 
+                    Hinh = "/images/sv1.jpg",
                     MaNganh = "CNTT"
                 },
                 new SinhVien
@@ -68,7 +72,7 @@ namespace Thi.Data
                     HoTen = "Nguyễn Thị B",
                     GioiTinh = "Nữ",
                     NgaySinh = new DateTime(2000, 3, 7),
-                    Hinh = "/images/sv2.jpg", 
+                    Hinh = "/images/sv2.jpg",
                     MaNganh = "QTKD"
                 }
             );

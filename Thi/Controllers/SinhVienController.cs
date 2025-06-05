@@ -50,7 +50,7 @@ namespace Thi.Controllers
         public IActionResult Create()
         {
             ViewBag.MaNganh = new SelectList(_context.NganhHocs, "MaNganh", "TenNganh");
-            return View();
+            return View(new SinhVien()); // Khởi tạo model mới
         }
 
         // POST: SinhVien/Create

@@ -18,12 +18,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="MaSV" class="form-label"></label>
-                                <input asp-for="MaSV" class="form-control" />
+                                <input asp-for="MaSV" class="form-control" placeholder="Nhập đúng 10 ký tự" maxlength="10" />
                                 <span asp-validation-for="MaSV" class="text-danger"></span>
+                                <small class="form-text text-muted">Mã sinh viên phải có đúng 10 ký tự</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="HoTen" class="form-label"></label>
-                                <input asp-for="HoTen" class="form-control" />
+                                <input asp-for="HoTen" class="form-control" maxlength="50" />
                                 <span asp-validation-for="HoTen" class="text-danger"></span>
                             </div>
                         </div>
@@ -55,9 +56,10 @@
                                 <span asp-validation-for="MaNganh" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="imageFile" class="form-label">Hình ảnh mới</label>
+                                <label for="imageFile" class="form-label">Hình ảnh</label>
                                 <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" />
-                                @if (!string.IsNullOrEmpty(Model.Hinh))
+                                <small class="form-text text-muted">Chỉ chấp nhận file hình ảnh (jpg, png, gif)</small>
+                                @if (Model != null && !string.IsNullOrEmpty(Model.Hinh))
                                 {
                                     <div class="mt-2">
                                         <small class="text-muted">Hình hiện tại:</small><br />
@@ -70,7 +72,7 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary me-2">
-                                    <i class="fas fa-save"></i> Cập nhật
+                                    <i class="fas fa-save"></i> Thêm mới
                                 </button>
                                 <a asp-action="Index" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left"></i> Quay lại
@@ -89,4 +91,16 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Validation cho mã sinh viên
+        document.getElementById('MaSV').addEventListener('input', function(e) {
+            let value = e.target.value;
+            if (value.length !== 10 && value.length > 0) {
+                e.target.setCustomValidity('Mã sinh viên phải có đúng 10 ký tự');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+    </script>
 }
