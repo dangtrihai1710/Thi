@@ -1,0 +1,72 @@
+﻿@model Thi.Models.SinhVien
+
+@{
+    ViewData["Title"] = "Xóa sinh viên";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Cảnh báo!</strong> Bạn có chắc chắn muốn xóa sinh viên này không?
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            @if (!string.IsNullOrEmpty(Model.Hinh))
+                            {
+                                <img src="@Model.Hinh" alt="Avatar" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="bg-secondary d-flex align-items-center justify-content-center mx-auto" style="width: 120px; height: 120px;">
+                                    <i class="fas fa-user text-white fa-3x"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.MaSV)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.MaSV)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.HoTen)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.HoTen)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.GioiTinh)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.GioiTinh)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.NgaySinh)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.NgaySinh)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.NganhHoc)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.NganhHoc.TenNganh)</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" class="mt-4">
+                        <input type="hidden" asp-for="MaSV" />
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-danger me-2">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}
