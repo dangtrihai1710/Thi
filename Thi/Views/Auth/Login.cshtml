@@ -1,0 +1,84 @@
+﻿@model Thi.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập hệ thống
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="MaSV" class="form-label">
+                                <i class="fas fa-user"></i> @Html.DisplayNameFor(m => m.MaSV)
+                            </label>
+                            <input asp-for="MaSV" class="form-control" placeholder="Nhập mã sinh viên" autofocus />
+                            <span asp-validation-for="MaSV" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MatKhau" class="form-label">
+                                <i class="fas fa-lock"></i> @Html.DisplayNameFor(m => m.MatKhau)
+                            </label>
+                            <input asp-for="MatKhau" class="form-control" placeholder="Nhập mật khẩu" />
+                            <span asp-validation-for="MatKhau" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Để đơn giản, bạn có thể nhập bất kỳ mật khẩu nào
+                            </small>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label">
+                                @Html.DisplayNameFor(m => m.RememberMe)
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr>
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            Sử dụng mã sinh viên có sẵn trong hệ thống để đăng nhập
+                        </small>
+                        <br>
+                        <small class="text-muted">
+                            Ví dụ: <strong>2280600791</strong> hoặc <strong>9876543210</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

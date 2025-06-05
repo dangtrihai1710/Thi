@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Thi.Models.HocPhan>
+
+@{
+    ViewData["Title"] = "Đăng ký học phần";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">
+                            <i class="fas fa-book"></i> @ViewData["Title"]
+                        </h4>
+                        <small class="text-muted">Xin chào: <strong>@ViewBag.UserName</strong></small>
+                    </div>
+                    <div>
+                        <a asp-action="Cart" class="btn btn-success me-2">
+                            <i class="fas fa-shopping-cart"></i>
+                            Giỏ hàng
+                            <span class="badge bg-light text-dark" id="cartCount">
+                                @((ViewBag.SelectedCourses as List<string>)?.Count ?? 0)
+                            </span>
+                        </a>
+                        <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.MaHP)</th>
+                                    <th>@Html.DisplayNameFor(model => model.TenHP)</th>
+                                    <th>@Html.DisplayNameFor(model => model.SoTinChi)</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary">@Html.DisplayFor(modelItem => item.MaHP)</span>
+                                        </td>
+                                        <td>@Html.DisplayFor(modelItem => item.TenHP)</td>
+                                        <td>
+                                            <span class="badge bg-info">@Html.DisplayFor(modelItem => item.SoTinChi) tín chỉ</span>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var selectedCourses = ViewBag.SelectedCourses as List<string>;
+                                                bool isSelected = selectedCourses != null && selectedCourses.Contains(item.MaHP);
+                                            }
+
+                                            @if (isSelected)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Đã chọn
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Chưa chọn</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (isSelected)
+                                            {
+                                                <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart('@item.MaHP')">
+                                                    <i class="fas fa-times"></i> Bỏ chọn
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-outline-primary btn-sm" onclick="addToCart('@item.MaHP')">
+                                                    <i class="fas fa-plus"></i> Đăng ký
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-4">
+                            <h5 class="text-muted">Chưa có học phần nào</h5>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        function addToCart(maHP) {
+            $.ajax({
+                url: '@Url.Action("AddToCart", "HocPhan")',
+                type: 'POST',
+                data: { maHP: maHP },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                }
+            });
+        }
+
+        function removeFromCart(maHP) {
+            $.ajax({
+                url: '@Url.Action("RemoveFromCart", "HocPhan")',
+                type: 'POST',
+                data: { maHP: maHP },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                }
+            });
+        }
+    </script>
+}

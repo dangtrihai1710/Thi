@@ -1,5 +1,4 @@
-﻿<!-- Thi/Views/Shared/_Layout.cshtml - Updated Navigation -->
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -34,11 +33,51 @@
                                 <i class="fas fa-users"></i> Sinh viên
                             </a>
                         </li>
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("IsLoggedIn")))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="HocPhan" asp-action="Index">
+                                    <i class="fas fa-book"></i> Đăng ký học phần
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="HocPhan" asp-action="Cart">
+                                    <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                                </a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">
                                 <i class="fas fa-shield-alt"></i> Chính sách
                             </a>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("IsLoggedIn")))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user"></i> @Context.Session.GetString("UserName")
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Auth" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
