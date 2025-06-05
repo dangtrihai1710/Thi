@@ -1,0 +1,254 @@
+﻿@model IEnumerable<Thi.Models.HocPhan>
+
+@{
+    ViewData["Title"] = "Quản lý học phần";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-cog"></i> @ViewData["Title"]
+                    </h4>
+                    <small>Quản lý số lượng dự kiến sinh viên cho từng học phần</small>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Hướng dẫn:</strong> Nhập số lượng mới và nhấn "Cập nhật" để thay đổi số lượng dự kiến cho học phần.
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="15%">Mã học phần</th>
+                                    <th width="35%">Tên học phần</th>
+                                    <th width="12%">Số tín chỉ</th>
+                                    <th width="15%">Số lượng hiện tại</th>
+                                    <th width="15%">Số lượng mới</th>
+                                    <th width="8%">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr id="row-@item.MaHP">
+                                        <td>
+                                            <span class="badge bg-primary fs-6">@item.MaHP</span>
+                                        </td>
+                                        <td>
+                                            <strong>@item.TenHP</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info fs-6">@item.SoTinChi tín chỉ</span>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var soLuong = item.SoLuong ?? 0;
+                                                var badgeClass = soLuong > 50 ? "bg-success" : soLuong > 10 ? "bg-warning" : "bg-danger";
+                                            }
+                                            <span class="badge @badgeClass fs-6" id="current-@item.MaHP">
+                                                @soLuong
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control form-control-sm"
+                                                   id="new-quantity-@item.MaHP"
+                                                   value="@item.SoLuong"
+                                                   min="0" max="500"
+                                                   style="width: 100px;">
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm"
+                                                    onclick="updateQuantity('@item.MaHP', '@item.TenHP')">
+                                                <i class="fas fa-save"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Thống kê -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-secondary">
+                                <h6><i class="fas fa-chart-bar"></i> Thống kê tổng quan:</h6>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <strong>Tổng học phần:</strong> @Model.Count()
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Tổng chỗ còn lại:</strong> @Model.Sum(x => x.SoLuong ?? 0)
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Học phần còn chỗ:</strong> @Model.Count(x => x.SoLuong > 0)
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Học phần hết chỗ:</strong> @Model.Count(x => x.SoLuong <= 0)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Các nút thao tác nhanh -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0"><i class="fas fa-magic"></i> Thao tác nhanh</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <button class="btn btn-outline-primary btn-sm w-100" onclick="resetAllTo(100)">
+                                                Reset tất cả về 100
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button class="btn btn-outline-success btn-sm w-100" onclick="resetAllTo(50)">
+                                                Reset tất cả về 50
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button class="btn btn-outline-warning btn-sm w-100" onclick="resetEmptyTo(25)">
+                                                Reset học phần hết chỗ về 25
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <a asp-action="Index" class="btn btn-secondary btn-sm w-100">
+                                                <i class="fas fa-arrow-left"></i> Quay lại
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        function updateQuantity(maHP, tenHP) {
+            var newQuantity = document.getElementById('new-quantity-' + maHP).value;
+
+            if (newQuantity < 0) {
+                alert('Số lượng không thể âm!');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("ResetSoLuong", "HocPhan")',
+                type: 'POST',
+                data: {
+                    maHP: maHP,
+                    soLuong: parseInt(newQuantity)
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Cập nhật hiển thị số lượng hiện tại
+                        var currentBadge = document.getElementById('current-' + maHP);
+                        currentBadge.textContent = newQuantity;
+
+                        // Cập nhật màu badge theo số lượng
+                        currentBadge.className = 'badge fs-6 ' +
+                            (newQuantity > 50 ? 'bg-success' :
+                             newQuantity > 10 ? 'bg-warning' : 'bg-danger');
+
+                        showNotification('success', response.message);
+
+                        // Cập nhật thống kê sau 1 giây
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        showNotification('error', response.message);
+                    }
+                },
+                error: function() {
+                    showNotification('error', 'Có lỗi xảy ra khi cập nhật số lượng.');
+                }
+            });
+        }
+
+        function resetAllTo(quantity) {
+            if (confirm('Bạn có chắc chắn muốn reset tất cả học phần về ' + quantity + ' sinh viên?')) {
+        @foreach (var item in Model)
+        {
+            <text>
+                        updateQuantityQuiet('@item.MaHP', quantity);
+            </text>
+        }
+
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+            }
+        }
+
+        function resetEmptyTo(quantity) {
+            if (confirm('Bạn có chắc chắn muốn reset các học phần hết chỗ về ' + quantity + ' sinh viên?')) {
+        @foreach (var item in Model.Where(x => x.SoLuong <= 0))
+        {
+            <text>
+                        updateQuantityQuiet('@item.MaHP', quantity);
+            </text>
+        }
+
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+            }
+        }
+
+        function updateQuantityQuiet(maHP, quantity) {
+            $.ajax({
+                url: '@Url.Action("ResetSoLuong", "HocPhan")',
+                type: 'POST',
+                data: {
+                    maHP: maHP,
+                    soLuong: parseInt(quantity)
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Cập nhật input và badge
+                        document.getElementById('new-quantity-' + maHP).value = quantity;
+                        var currentBadge = document.getElementById('current-' + maHP);
+                        currentBadge.textContent = quantity;
+                        currentBadge.className = 'badge fs-6 ' +
+                            (quantity > 50 ? 'bg-success' :
+                             quantity > 10 ? 'bg-warning' : 'bg-danger');
+                    }
+                }
+            });
+        }
+
+        function showNotification(type, message) {
+            var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+
+            var notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="fas ${icon}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            $('.container-fluid').prepend(notification);
+
+            setTimeout(function() {
+                $('.alert:first').fadeOut();
+            }, 3000);
+        }
+    </script>
+}

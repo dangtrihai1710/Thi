@@ -27,7 +27,7 @@ namespace Thi.Data
             // Configure column types and lengths
             modelBuilder.Entity<SinhVien>()
                 .Property(s => s.Hinh)
-                .HasMaxLength(200); // Tăng độ dài cột Hinh
+                .HasMaxLength(200);
 
             // Configure relationships
             modelBuilder.Entity<SinhVien>()
@@ -77,11 +77,12 @@ namespace Thi.Data
                 }
             );
 
+            // Cập nhật seed data cho HocPhan với SoLuong
             modelBuilder.Entity<HocPhan>().HasData(
-                new HocPhan { MaHP = "CNTT01", TenHP = "Lập trình C", SoTinChi = 3 },
-                new HocPhan { MaHP = "CNTT02", TenHP = "Cơ sở dữ liệu", SoTinChi = 2 },
-                new HocPhan { MaHP = "QTKD01", TenHP = "Kinh tế vi mô", SoTinChi = 2 },
-                new HocPhan { MaHP = "QTDK02", TenHP = "Xác suất thống kê 1", SoTinChi = 3 }
+                new HocPhan { MaHP = "CNTT01", TenHP = "Lập trình C", SoTinChi = 3, SoLuong = 99 },
+                new HocPhan { MaHP = "CNTT02", TenHP = "Cơ sở dữ liệu", SoTinChi = 2, SoLuong = 99 },
+                new HocPhan { MaHP = "QTKD01", TenHP = "Kinh tế vi mô", SoTinChi = 2, SoLuong = 100 },
+                new HocPhan { MaHP = "QTDK02", TenHP = "Xác suất thống kê 1", SoTinChi = 3, SoLuong = 99 }
             );
         }
     }

@@ -45,12 +45,24 @@ namespace Thi.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddToCart(string maHP)
+        public async Task<IActionResult> AddToCart(string maHP)
         {
             // Kiểm tra đăng nhập
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
             {
                 return Json(new { success = false, message = "Bạn cần đăng nhập để thực hiện chức năng này." });
+            }
+
+            // Kiểm tra số lượng còn lại
+            var hocPhan = await _context.HocPhans.FindAsync(maHP);
+            if (hocPhan == null)
+            {
+                return Json(new { success = false, message = "Học phần không tồn tại." });
+            }
+
+            if (hocPhan.SoLuong <= 0)
+            {
+                return Json(new { success = false, message = "Học phần đã hết chỗ." });
             }
 
             // Lấy danh sách học phần đã chọn từ session
@@ -127,7 +139,6 @@ namespace Thi.Controllers
             return Json(new { success = true, message = "Đã xóa tất cả học phần khỏi danh sách đăng ký." });
         }
 
-        // Phương thức xóa từng học phần từ giỏ hàng (cho trang Cart)
         [HttpPost]
         public IActionResult RemoveFromCartPage(string maHP)
         {
@@ -159,7 +170,6 @@ namespace Thi.Controllers
             }
         }
 
-        // Phương thức xóa tất cả học phần (Xóa đăng ký)
         [HttpPost]
         public IActionResult ClearAllRegistration()
         {
@@ -176,11 +186,10 @@ namespace Thi.Controllers
             }
         }
 
-
-        // Thêm vào cuối class HocPhanController
         [HttpPost]
         public async Task<IActionResult> SaveRegistration()
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 // Kiểm tra đăng nhập
@@ -199,13 +208,30 @@ namespace Thi.Controllers
 
                 var courseIds = selectedCourses.Split(',').ToList();
 
-                // Kiểm tra sinh viên đã có đăng ký chưa (một sinh viên chỉ được đăng ký một lần)
+                // Kiểm tra sinh viên đã có đăng ký chưa
                 var existingRegistration = await _context.DangKys
                     .FirstOrDefaultAsync(d => d.MaSV == userID);
 
                 if (existingRegistration != null)
                 {
                     return Json(new { success = false, message = "Bạn đã có đăng ký học phần trong hệ thống. Một sinh viên chỉ được đăng ký một lần." });
+                }
+
+                // Kiểm tra số lượng của từng học phần trước khi lưu
+                foreach (var courseId in courseIds)
+                {
+                    var hocPhan = await _context.HocPhans.FindAsync(courseId);
+                    if (hocPhan == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return Json(new { success = false, message = $"Học phần {courseId} không tồn tại." });
+                    }
+
+                    if (hocPhan.SoLuong <= 0)
+                    {
+                        await transaction.RollbackAsync();
+                        return Json(new { success = false, message = $"Học phần {hocPhan.TenHP} đã hết chỗ." });
+                    }
                 }
 
                 // Tạo bản ghi đăng ký mới
@@ -218,18 +244,28 @@ namespace Thi.Controllers
                 _context.DangKys.Add(dangKy);
                 await _context.SaveChangesAsync();
 
-                // Lưu chi tiết đăng ký
+                // Lưu chi tiết đăng ký và cập nhật số lượng
                 foreach (var courseId in courseIds)
                 {
+                    // Thêm chi tiết đăng ký
                     var chiTietDangKy = new ChiTietDangKy
                     {
                         MaDK = dangKy.MaDK,
                         MaHP = courseId
                     };
                     _context.ChiTietDangKys.Add(chiTietDangKy);
+
+                    // Giảm số lượng học phần
+                    var hocPhan = await _context.HocPhans.FindAsync(courseId);
+                    if (hocPhan != null && hocPhan.SoLuong > 0)
+                    {
+                        hocPhan.SoLuong--;
+                        _context.HocPhans.Update(hocPhan);
+                    }
                 }
 
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 // Xóa session sau khi lưu thành công
                 HttpContext.Session.Remove("SelectedCourses");
@@ -237,17 +273,17 @@ namespace Thi.Controllers
                 return Json(new
                 {
                     success = true,
-                    message = $"Đăng ký thành công {courseIds.Count} học phần! Mã đăng ký: {dangKy.MaDK}",
+                    message = $"Đăng ký thành công {courseIds.Count} học phần! Mã đăng ký: {dangKy.MaDK}. Số lượng học phần đã được cập nhật.",
                     registrationId = dangKy.MaDK
                 });
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 return Json(new { success = false, message = "Có lỗi xảy ra trong quá trình lưu đăng ký: " + ex.Message });
             }
         }
 
-        // Thêm action để hiển thị thông tin đăng ký đã lưu
         public async Task<IActionResult> RegistrationResult(int? id)
         {
             if (id == null)
@@ -274,7 +310,6 @@ namespace Thi.Controllers
             return View(dangKy);
         }
 
-        // Thêm action để xem tất cả đăng ký của sinh viên
         public async Task<IActionResult> MyRegistrations()
         {
             // Kiểm tra đăng nhập
@@ -299,6 +334,35 @@ namespace Thi.Controllers
 
             return View(dangKys);
         }
-    }
 
+        // Thêm action để quản lý học phần (dành cho admin)
+        public async Task<IActionResult> ManageHocPhan()
+        {
+            var hocPhans = await _context.HocPhans.ToListAsync();
+            return View(hocPhans);
+        }
+
+        // Action để reset số lượng học phần (dành cho admin)
+        [HttpPost]
+        public async Task<IActionResult> ResetSoLuong(string maHP, int soLuong)
+        {
+            try
+            {
+                var hocPhan = await _context.HocPhans.FindAsync(maHP);
+                if (hocPhan != null)
+                {
+                    hocPhan.SoLuong = soLuong;
+                    _context.HocPhans.Update(hocPhan);
+                    await _context.SaveChangesAsync();
+
+                    return Json(new { success = true, message = $"Đã cập nhật số lượng học phần {hocPhan.TenHP} thành {soLuong}" });
+                }
+                return Json(new { success = false, message = "Không tìm thấy học phần" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Có lỗi xảy ra: " + ex.Message });
+            }
+        }
+    }
 }

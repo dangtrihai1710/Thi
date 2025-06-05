@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Thi.Data;
 
@@ -11,9 +12,11 @@ using Thi.Data;
 namespace Thi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250605072907_AddSoLuongToHocPhan")]
+    partial class AddSoLuongToHocPhan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,14 +85,14 @@ namespace Thi.Migrations
                         new
                         {
                             MaHP = "CNTT01",
-                            SoLuong = 99,
+                            SoLuong = 100,
                             SoTinChi = 3,
                             TenHP = "Lập trình C"
                         },
                         new
                         {
                             MaHP = "CNTT02",
-                            SoLuong = 99,
+                            SoLuong = 100,
                             SoTinChi = 2,
                             TenHP = "Cơ sở dữ liệu"
                         },
@@ -103,7 +106,7 @@ namespace Thi.Migrations
                         new
                         {
                             MaHP = "QTDK02",
-                            SoLuong = 99,
+                            SoLuong = 100,
                             SoTinChi = 3,
                             TenHP = "Xác suất thống kê 1"
                         });

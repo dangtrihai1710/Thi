@@ -52,6 +52,27 @@
                                 </a>
                             </li>
                         }
+
+                        <!-- Menu quản lý (dành cho admin) -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownAdmin" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-cogs"></i> Quản lý
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="HocPhan" asp-action="ManageHocPhan">
+                                        <i class="fas fa-book"></i> Quản lý học phần
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="showStatistics()">
+                                        <i class="fas fa-chart-bar"></i> Thống kê đăng ký
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">
                                 <i class="fas fa-shield-alt"></i> Chính sách
@@ -110,6 +131,13 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function showStatistics() {
+            alert('Chức năng thống kê đăng ký sẽ được phát triển trong tương lai!');
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
