@@ -33,6 +33,7 @@
                                 <i class="fas fa-users"></i> Sinh viên
                             </a>
                         </li>
+
                         @if (!string.IsNullOrEmpty(Context.Session.GetString("IsLoggedIn")))
                         {
                             <li class="nav-item">
@@ -43,6 +44,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="HocPhan" asp-action="Cart">
                                     <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="HocPhan" asp-action="MyRegistrations">
+                                    <i class="fas fa-list-alt"></i> Đăng ký của tôi
                                 </a>
                             </li>
                         }

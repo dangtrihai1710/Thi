@@ -1,0 +1,171 @@
+﻿@model Thi.Models.DangKy
+
+@{
+    ViewData["Title"] = "Kết quả đăng ký học phần";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Thông báo thành công -->
+            <div class="alert alert-success text-center">
+                <h4><i class="fas fa-check-circle"></i> Đăng ký học phần thành công!</h4>
+                <p class="mb-0">Mã đăng ký: <strong>@Model.MaDK</strong> | Ngày đăng ký: <strong>@Model.NgayDK?.ToString("dd/MM/yyyy HH:mm")</strong></p>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-alt"></i> Chi tiết đăng ký học phần
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Thông tin sinh viên -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0"><i class="fas fa-user"></i> Thông tin sinh viên</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless mb-0">
+                                        <tr>
+                                            <td><strong>Mã SV:</strong></td>
+                                            <td>@Model.SinhVien?.MaSV</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Họ tên:</strong></td>
+                                            <td>@Model.SinhVien?.HoTen</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Ngành:</strong></td>
+                                            <td>@Model.SinhVien?.NganhHoc?.TenNganh</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Ngày đăng ký:</strong></td>
+                                            <td>@Model.NgayDK?.ToString("dd/MM/yyyy HH:mm")</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="fas fa-chart-bar"></i> Thống kê đăng ký</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless mb-0">
+                                        <tr>
+                                            <td><strong>Mã đăng ký:</strong></td>
+                                            <td><span class="badge bg-primary">@Model.MaDK</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Số học phần:</strong></td>
+                                            <td><span class="badge bg-warning">@Model.ChiTietDangKys.Count</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tổng tín chỉ:</strong></td>
+                                            <td><span class="badge bg-success">@Model.ChiTietDangKys.Sum(x => x.HocPhan?.SoTinChi ?? 0)</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Trạng thái:</strong></td>
+                                            <td><span class="badge bg-success">Đã lưu</span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách học phần đã đăng ký -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="15%">STT</th>
+                                    <th width="20%">Mã học phần</th>
+                                    <th width="45%">Tên học phần</th>
+                                    <th width="20%">Số tín chỉ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int i = 1;
+                                }
+                                @foreach (var chiTiet in Model.ChiTietDangKys)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-secondary">@i</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary fs-6">@chiTiet.HocPhan?.MaHP</span>
+                                        </td>
+                                        <td>
+                                            <strong>@chiTiet.HocPhan?.TenHP</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info fs-6">@chiTiet.HocPhan?.SoTinChi tín chỉ</span>
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="3">
+                                        <i class="fas fa-calculator"></i> Tổng cộng:
+                                    </th>
+                                    <th>
+                                        <span class="badge bg-success fs-6">
+                                            @Model.ChiTietDangKys.Sum(x => x.HocPhan?.SoTinChi ?? 0) tín chỉ
+                                        </span>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Nút điều hướng -->
+                    <div class="text-center mt-4">
+                        <a asp-action="Index" class="btn btn-primary me-2">
+                            <i class="fas fa-plus"></i> Đăng ký thêm học phần
+                        </a>
+                        <a asp-action="MyRegistrations" class="btn btn-info me-2">
+                            <i class="fas fa-list"></i> Xem tất cả đăng ký
+                        </a>
+                        <button onclick="window.print()" class="btn btn-secondary">
+                            <i class="fas fa-print"></i> In phiếu đăng ký
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Print styles
+        window.addEventListener('beforeprint', function() {
+            document.title = 'Phiếu đăng ký học phần - Mã ĐK: @Model.MaDK';
+        });
+    </script>
+}
+
+<style>
+    @@media print {
+        .btn, .alert
+
+    {
+        display: none !important;
+    }
+
+    .card {
+        border: 1px solid #000 !important;
+    }
+
+    }
+</style>

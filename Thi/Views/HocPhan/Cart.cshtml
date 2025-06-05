@@ -187,12 +187,36 @@
             }
         }
 
-        // Lưu đăng ký (sẽ implement trong câu 5)
+        // Thay thế hàm saveRegistration() trong phần Scripts
         function saveRegistration() {
             if (confirm('Bạn có muốn lưu thông tin đăng ký này?\n\nSau khi lưu, bạn sẽ không thể thay đổi.')) {
-                // Chuyển hướng đến action lưu đăng ký (câu 5)
-                alert('Chức năng lưu đăng ký sẽ được thực hiện trong câu 5.');
-                // window.location.href = '@Url.Action("SaveRegistration", "HocPhan")';
+                // Hiển thị loading
+                $('button').prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("SaveRegistration", "HocPhan")',
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            // Hiển thị thông báo thành công
+                            alert('✅ ' + response.message);
+
+                            // Chuyển hướng đến trang kết quả hoặc trang chủ
+                            if (response.registrationId) {
+                                window.location.href = '@Url.Action("RegistrationResult", "HocPhan")/' + response.registrationId;
+                            } else {
+                                window.location.href = '@Url.Action("Index", "HocPhan")';
+                            }
+                        } else {
+                            alert('❌ ' + response.message);
+                            $('button').prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        alert('❌ Có lỗi xảy ra. Vui lòng thử lại.');
+                        $('button').prop('disabled', false);
+                    }
+                });
             }
         }
 
