@@ -1,8 +1,300 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <div class="hero-content fade-in-up">
+                    <h1 class="hero-title">
+                        <i class="fas fa-graduation-cap"></i>
+                        Hệ Thống Quản Lý Sinh Viên
+                    </h1>
+                    <p class="hero-subtitle">
+                        Giải pháp quản lý sinh viên và đăng ký học phần hiện đại,
+                        tiện lợi và thân thiện với người dùng
+                    </p>
+                    <div class="hero-buttons fade-in-up-delay-1">
+                        @if (string.IsNullOrEmpty(Context.Session.GetString("IsLoggedIn")))
+                        {
+                            <a asp-controller="Auth" asp-action="Login" class="btn btn-light btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Đăng nhập ngay
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="HocPhan" asp-action="Index" class="btn btn-light btn-lg">
+                                <i class="fas fa-book"></i> Đăng ký học phần
+                            </a>
+                        }
+                        <a asp-controller="SinhVien" asp-action="Index" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-users"></i> Quản lý sinh viên
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto text-center fade-in-up">
+                <h2 class="text-gradient mb-3">Tính Năng Nổi Bật</h2>
+                <p class="lead text-muted">
+                    Hệ thống cung cấp đầy đủ các tính năng cần thiết cho việc quản lý sinh viên hiệu quả
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4 fade-in-up-delay-1">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4 class="feature-title">Quản Lý Sinh Viên</h4>
+                    <p class="feature-description">
+                        Quản lý thông tin sinh viên một cách toàn diện với giao diện thân thiện.
+                        Thêm, sửa, xóa và tìm kiếm sinh viên dễ dàng.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4 fade-in-up-delay-2">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4 class="feature-title">Đăng Ký Học Phần</h4>
+                    <p class="feature-description">
+                        Hệ thống đăng ký học phần trực tuyến hiện đại với giỏ hàng thông minh
+                        và quản lý số lượng theo thời gian thực.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4 fade-in-up-delay-3">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h4 class="feature-title">Báo Cáo Thống Kê</h4>
+                    <p class="feature-description">
+                        Xem báo cáo và thống kê chi tiết về tình hình đăng ký học phần
+                        và thông tin sinh viên một cách trực quan.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4 fade-in-up">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4 class="feature-title">Responsive Design</h4>
+                    <p class="feature-description">
+                        Giao diện responsive hoạt động mượt mà trên mọi thiết bị
+                        từ máy tính để bàn đến điện thoại di động.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4 fade-in-up-delay-1">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="feature-title">Bảo Mật Cao</h4>
+                    <p class="feature-description">
+                        Hệ thống bảo mật đa lớp đảm bảo an toàn thông tin sinh viên
+                        và dữ liệu nhạy cảm của trường học.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4 fade-in-up-delay-2">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4 class="feature-title">Realtime Updates</h4>
+                    <p class="feature-description">
+                        Cập nhật thông tin theo thời gian thực, đảm bảo dữ liệu
+                        luôn chính xác và được đồng bộ hóa.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item fade-in-up">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Sinh viên đã đăng ký</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item fade-in-up-delay-1">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Học phần có sẵn</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item fade-in-up-delay-2">
+                    <span class="stat-number">10+</span>
+                    <span class="stat-label">Ngành học</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item fade-in-up-delay-3">
+                    <span class="stat-number">99.9%</span>
+                    <span class="stat-label">Uptime hệ thống</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5 fade-in-up">
+                <h2 class="text-gradient mb-3">Bắt Đầu Ngay</h2>
+                <p class="lead text-muted">
+                    Chọn chức năng phù hợp với vai trò của bạn trong hệ thống
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4 fade-in-up-delay-1">
+                <div class="card h-100 shadow-soft">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-graduate text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Dành cho Sinh viên</h4>
+                        <p class="card-text text-muted">
+                            Đăng nhập để đăng ký học phần, xem thông tin cá nhân và theo dõi kết quả học tập
+                        </p>
+                        @if (string.IsNullOrEmpty(Context.Session.GetString("IsLoggedIn")))
+                        {
+                            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="HocPhan" asp-action="Index" class="btn btn-primary">
+                                <i class="fas fa-book"></i> Đăng ký học phần
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4 fade-in-up-delay-2">
+                <div class="card h-100 shadow-soft">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-tie text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Dành cho Quản trị viên</h4>
+                        <p class="card-text text-muted">
+                            Quản lý thông tin sinh viên, học phần và theo dõi tình hình đăng ký của toàn trường
+                        </p>
+                        <a asp-controller="SinhVien" asp-action="Index" class="btn btn-success">
+                            <i class="fas fa-users"></i> Quản lý sinh viên
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Add smooth scrolling and animation effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intersection Observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.visibility = 'visible';
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all animated elements
+            document.querySelectorAll('.fade-in-up, .fade-in-up-delay-1, .fade-in-up-delay-2, .fade-in-up-delay-3').forEach(el => {
+                el.style.visibility = 'hidden';
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+
+            // Add hover effects to cards
+            document.querySelectorAll('.feature-card, .card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Animate stat numbers
+            function animateValue(element, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const value = Math.floor(progress * (end - start) + start);
+                    element.innerHTML = value + (element.dataset.suffix || '');
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            // Observe stats section
+            const statsObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const statNumbers = entry.target.querySelectorAll('.stat-number');
+                        statNumbers.forEach(stat => {
+                            const endValue = parseInt(stat.textContent);
+                            stat.dataset.suffix = stat.textContent.replace(/[0-9]/g, '');
+                            animateValue(stat, 0, endValue, 2000);
+                        });
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            const statsSection = document.querySelector('.stats-section');
+            if (statsSection) {
+                statsObserver.observe(statsSection);
+            }
+        });
+    </script>
+}
