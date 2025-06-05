@@ -13,15 +13,23 @@
         </div>
     }
 
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
                     <div>
                         <h4 class="mb-0">
                             <i class="fas fa-book"></i> @ViewData["Title"]
                         </h4>
-                        <small class="text-muted">Xin chào: <strong>@ViewBag.UserName</strong></small>
+                        <small>Xin chào: <strong>@ViewBag.UserName</strong> (ID: @ViewBag.UserID)</small>
                     </div>
                     <div>
                         <a asp-action="Cart" class="btn btn-success me-2">
@@ -32,7 +40,7 @@
                             </span>
                         </a>
                         <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-outline-danger">
+                            <button type="submit" class="btn btn-outline-light">
                                 <i class="fas fa-sign-out-alt"></i> Đăng xuất
                             </button>
                         </form>
@@ -43,11 +51,11 @@
                         <table class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>@Html.DisplayNameFor(model => model.MaHP)</th>
-                                    <th>@Html.DisplayNameFor(model => model.TenHP)</th>
-                                    <th>@Html.DisplayNameFor(model => model.SoTinChi)</th>
-                                    <th>Trạng thái</th>
-                                    <th>Thao tác</th>
+                                    <th width="15%">@Html.DisplayNameFor(model => model.MaHP)</th>
+                                    <th width="40%">@Html.DisplayNameFor(model => model.TenHP)</th>
+                                    <th width="15%">@Html.DisplayNameFor(model => model.SoTinChi)</th>
+                                    <th width="15%">Trạng thái</th>
+                                    <th width="15%">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,11 +63,13 @@
                                 {
                                     <tr>
                                         <td>
-                                            <span class="badge bg-primary">@Html.DisplayFor(modelItem => item.MaHP)</span>
+                                            <span class="badge bg-primary fs-6">@Html.DisplayFor(modelItem => item.MaHP)</span>
                                         </td>
-                                        <td>@Html.DisplayFor(modelItem => item.TenHP)</td>
                                         <td>
-                                            <span class="badge bg-info">@Html.DisplayFor(modelItem => item.SoTinChi) tín chỉ</span>
+                                            <strong>@Html.DisplayFor(modelItem => item.TenHP)</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info fs-6">@Html.DisplayFor(modelItem => item.SoTinChi) tín chỉ</span>
                                         </td>
                                         <td>
                                             @{
@@ -75,19 +85,21 @@
                                             }
                                             else
                                             {
-                                                <span class="badge bg-secondary">Chưa chọn</span>
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-minus"></i> Chưa chọn
+                                                </span>
                                             }
                                         </td>
                                         <td>
                                             @if (isSelected)
                                             {
-                                                <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart('@item.MaHP')">
+                                                <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart('@item.MaHP', '@item.TenHP')">
                                                     <i class="fas fa-times"></i> Bỏ chọn
                                                 </button>
                                             }
                                             else
                                             {
-                                                <button class="btn btn-outline-primary btn-sm" onclick="addToCart('@item.MaHP')">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="addToCart('@item.MaHP', '@item.TenHP')">
                                                     <i class="fas fa-plus"></i> Đăng ký
                                                 </button>
                                             }
@@ -104,6 +116,32 @@
                             <h5 class="text-muted">Chưa có học phần nào</h5>
                         </div>
                     }
+                    else
+                    {
+                        <!-- Thống kê -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Thống kê</h6>
+                                    <ul class="mb-0">
+                                        <li>Tổng số học phần: <strong>@Model.Count()</strong></li>
+                                        <li>Đã chọn: <strong>@((ViewBag.SelectedCourses as List<string>)?.Count ?? 0)</strong></li>
+                                        <li>Chưa chọn: <strong>@(Model.Count() - ((ViewBag.SelectedCourses as List<string>)?.Count ?? 0))</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning">
+                                    <h6><i class="fas fa-exclamation-triangle"></i> Hướng dẫn</h6>
+                                    <ul class="mb-0">
+                                        <li>Nhấn "Đăng ký" để thêm học phần vào giỏ hàng</li>
+                                        <li>Nhấn "Bỏ chọn" để loại bỏ khỏi giỏ hàng</li>
+                                        <li>Vào "Giỏ hàng" để xem chi tiết và lưu đăng ký</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -113,40 +151,78 @@
 @section Scripts {
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        function addToCart(maHP) {
+        function addToCart(maHP, tenHP) {
             $.ajax({
                 url: '@Url.Action("AddToCart", "HocPhan")',
                 type: 'POST',
                 data: { maHP: maHP },
                 success: function(response) {
                     if (response.success) {
-                        location.reload();
+                        // Hiển thị thông báo thành công
+                        showNotification('success', 'Đã thêm "' + tenHP + '" vào giỏ hàng');
+                        // Reload trang để cập nhật giao diện
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
                     } else {
-                        alert(response.message);
+                        showNotification('error', response.message);
                     }
                 },
                 error: function() {
-                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                    showNotification('error', 'Có lỗi xảy ra. Vui lòng thử lại.');
                 }
             });
         }
 
-        function removeFromCart(maHP) {
+        function removeFromCart(maHP, tenHP) {
             $.ajax({
                 url: '@Url.Action("RemoveFromCart", "HocPhan")',
                 type: 'POST',
                 data: { maHP: maHP },
                 success: function(response) {
                     if (response.success) {
-                        location.reload();
+                        // Hiển thị thông báo thành công
+                        showNotification('success', 'Đã bỏ chọn "' + tenHP + '"');
+                        // Reload trang để cập nhật giao diện
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
                     } else {
-                        alert(response.message);
+                        showNotification('error', response.message);
                     }
                 },
                 error: function() {
-                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                    showNotification('error', 'Có lỗi xảy ra. Vui lòng thử lại.');
                 }
             });
         }
+
+        // Function để hiển thị notification
+        function showNotification(type, message) {
+            var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+
+            var notification = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="fas ${icon}"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            // Thêm notification vào đầu trang
+            $('.container-fluid').prepend(notification);
+
+            // Tự động ẩn sau 3 giây
+            setTimeout(function() {
+                $('.alert:first').fadeOut();
+            }, 3000);
+        }
+
+        // Auto-hide existing alerts
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove();
+            });
+        }, 5000);
     </script>
 }

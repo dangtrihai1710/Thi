@@ -7,22 +7,39 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
+            <!-- Hiển thị thông báo -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
                     <div>
                         <h4 class="mb-0">
                             <i class="fas fa-shopping-cart"></i> @ViewData["Title"]
                         </h4>
-                        <small class="text-muted">Sinh viên: <strong>@ViewBag.UserName</strong></small>
+                        <small>Sinh viên: <strong>@ViewBag.UserName</strong> (ID: @ViewBag.UserID)</small>
                     </div>
                     <div>
-                        <a asp-action="Index" class="btn btn-outline-primary me-2">
+                        <a asp-action="Index" class="btn btn-outline-light me-2">
                             <i class="fas fa-arrow-left"></i> Quay lại đăng ký
                         </a>
                         @if (Model.Any())
                         {
-                            <button class="btn btn-danger me-2" onclick="clearCart()">
-                                <i class="fas fa-trash-alt"></i> Xóa tất cả
+                            <button class="btn btn-danger me-2" onclick="confirmClearAll()">
+                                <i class="fas fa-trash-alt"></i> Xóa đăng ký
                             </button>
                             <button class="btn btn-success" onclick="saveRegistration()">
                                 <i class="fas fa-save"></i> Lưu đăng ký
@@ -37,10 +54,10 @@
                             <table class="table table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Mã học phần</th>
-                                        <th>Tên học phần</th>
-                                        <th>Số tín chỉ</th>
-                                        <th>Thao tác</th>
+                                        <th width="15%">Mã học phần</th>
+                                        <th width="45%">Tên học phần</th>
+                                        <th width="15%">Số tín chỉ</th>
+                                        <th width="25%">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -48,32 +65,78 @@
                                     {
                                         <tr>
                                             <td>
-                                                <span class="badge bg-primary">@Html.DisplayFor(modelItem => item.MaHP)</span>
-                                            </td>
-                                            <td>@Html.DisplayFor(modelItem => item.TenHP)</td>
-                                            <td>
-                                                <span class="badge bg-info">@Html.DisplayFor(modelItem => item.SoTinChi) tín chỉ</span>
+                                                <span class="badge bg-primary fs-6">@Html.DisplayFor(modelItem => item.MaHP)</span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart('@item.MaHP')">
-                                                    <i class="fas fa-times"></i> Xóa
-                                                </button>
+                                                <strong>@Html.DisplayFor(modelItem => item.TenHP)</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info fs-6">@Html.DisplayFor(modelItem => item.SoTinChi) tín chỉ</span>
+                                            </td>
+                                            <td>
+                                                <form asp-action="RemoveFromCartPage" method="post" class="d-inline" onsubmit="return confirmRemove('@item.TenHP')">
+                                                    <input type="hidden" name="maHP" value="@item.MaHP" />
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-times"></i> Xóa học phần
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     }
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr>
-                                        <th colspan="2">Tổng cộng:</th>
+                                        <th colspan="2">
+                                            <i class="fas fa-calculator"></i> Tổng cộng:
+                                        </th>
                                         <th>
                                             <span class="badge bg-success fs-6">
                                                 @Model.Sum(x => x.SoTinChi ?? 0) tín chỉ
                                             </span>
                                         </th>
-                                        <th>@Model.Count() học phần</th>
+                                        <th>
+                                            <span class="badge bg-warning fs-6">
+                                                @Model.Count() học phần
+                                            </span>
+                                        </th>
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
+
+                        <!-- Thông tin tóm tắt -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0"><i class="fas fa-info-circle"></i> Thông tin đăng ký</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><strong>Sinh viên:</strong> @ViewBag.UserName</li>
+                                            <li><strong>Mã SV:</strong> @ViewBag.UserID</li>
+                                            <li><strong>Số học phần:</strong> @Model.Count()</li>
+                                            <li><strong>Tổng tín chỉ:</strong> @Model.Sum(x => x.SoTinChi ?? 0)</li>
+                                            <li><strong>Trạng thái:</strong> <span class="badge bg-warning">Chưa lưu</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-warning">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Lưu ý</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="small mb-0">
+                                            <li>Bạn có thể xóa từng học phần bằng nút "Xóa học phần"</li>
+                                            <li>Nút "Xóa đăng ký" sẽ xóa tất cả học phần đã chọn</li>
+                                            <li>Nhấn "Lưu đăng ký" để hoàn tất quá trình đăng ký</li>
+                                            <li>Thông tin chỉ được lưu khi bạn nhấn "Lưu đăng ký"</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     }
                     else
@@ -82,8 +145,8 @@
                             <i class="fas fa-shopping-cart text-muted" style="font-size: 4rem;"></i>
                             <h5 class="text-muted mt-3">Giỏ hàng trống</h5>
                             <p class="text-muted">Bạn chưa chọn học phần nào để đăng ký.</p>
-                            <a asp-action="Index" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Chọn học phần
+                            <a asp-action="Index" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus"></i> Chọn học phần ngay
                             </a>
                         </div>
                     }
@@ -96,48 +159,48 @@
 @section Scripts {
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        function removeFromCart(maHP) {
-            if (confirm('Bạn có chắc chắn muốn xóa học phần này khỏi giỏ hàng?')) {
-                $.ajax({
-                    url: '@Url.Action("RemoveFromCart", "HocPhan")',
-                    type: 'POST',
-                    data: { maHP: maHP },
-                    success: function(response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function() {
-                        alert('Có lỗi xảy ra. Vui lòng thử lại.');
-                    }
-                });
+        // Xác nhận xóa từng học phần
+        function confirmRemove(tenHP) {
+            return confirm('Bạn có chắc chắn muốn xóa học phần "' + tenHP + '" khỏi danh sách đăng ký?');
+        }
+
+        // Xác nhận xóa tất cả đăng ký
+        function confirmClearAll() {
+            if (confirm('⚠️ CẢNH BÁO!\n\nBạn có chắc chắn muốn XÓA TẤT CẢ học phần đã chọn?\n\nHành động này không thể hoàn tác!')) {
+                // Gửi form để xóa tất cả
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("ClearAllRegistration", "HocPhan")';
+
+                // Thêm anti-forgery token
+                var token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    var hiddenToken = document.createElement('input');
+                    hiddenToken.type = 'hidden';
+                    hiddenToken.name = '__RequestVerificationToken';
+                    hiddenToken.value = token.value;
+                    form.appendChild(hiddenToken);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
             }
         }
 
-        function clearCart() {
-            if (confirm('Bạn có chắc chắn muốn xóa tất cả học phần khỏi giỏ hàng?')) {
-                $.ajax({
-                    url: '@Url.Action("ClearCart", "HocPhan")',
-                    type: 'POST',
-                    success: function(response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function() {
-                        alert('Có lỗi xảy ra. Vui lòng thử lại.');
-                    }
-                });
-            }
-        }
-
+        // Lưu đăng ký (sẽ implement trong câu 5)
         function saveRegistration() {
-            // Điều hướng đến trang lưu đăng ký (sẽ implement trong câu 5)
-            alert('Chức năng lưu đăng ký sẽ được thực hiện trong câu 5.');
+            if (confirm('Bạn có muốn lưu thông tin đăng ký này?\n\nSau khi lưu, bạn sẽ không thể thay đổi.')) {
+                // Chuyển hướng đến action lưu đăng ký (câu 5)
+                alert('Chức năng lưu đăng ký sẽ được thực hiện trong câu 5.');
+                // window.location.href = '@Url.Action("SaveRegistration", "HocPhan")';
+            }
         }
+
+        // Auto-hide alerts after 5 seconds
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove();
+            });
+        }, 5000);
     </script>
 }

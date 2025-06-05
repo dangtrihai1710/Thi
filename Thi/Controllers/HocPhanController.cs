@@ -115,6 +115,8 @@ namespace Thi.Controllers
             }
 
             ViewBag.UserName = HttpContext.Session.GetString("UserName");
+            ViewBag.UserID = HttpContext.Session.GetString("UserID");
+
             return View(hocPhans);
         }
 
@@ -123,6 +125,55 @@ namespace Thi.Controllers
         {
             HttpContext.Session.Remove("SelectedCourses");
             return Json(new { success = true, message = "Đã xóa tất cả học phần khỏi danh sách đăng ký." });
+        }
+
+        // Phương thức xóa từng học phần từ giỏ hàng (cho trang Cart)
+        [HttpPost]
+        public IActionResult RemoveFromCartPage(string maHP)
+        {
+            try
+            {
+                var selectedCourses = HttpContext.Session.GetString("SelectedCourses");
+                if (!string.IsNullOrEmpty(selectedCourses))
+                {
+                    var coursesList = selectedCourses.Split(',').ToList();
+                    coursesList.Remove(maHP);
+
+                    if (coursesList.Any())
+                    {
+                        HttpContext.Session.SetString("SelectedCourses", string.Join(",", coursesList));
+                    }
+                    else
+                    {
+                        HttpContext.Session.Remove("SelectedCourses");
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Đã xóa học phần khỏi danh sách đăng ký.";
+                return RedirectToAction("Cart");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa học phần.";
+                return RedirectToAction("Cart");
+            }
+        }
+
+        // Phương thức xóa tất cả học phần (Xóa đăng ký)
+        [HttpPost]
+        public IActionResult ClearAllRegistration()
+        {
+            try
+            {
+                HttpContext.Session.Remove("SelectedCourses");
+                TempData["SuccessMessage"] = "Đã xóa tất cả học phần khỏi danh sách đăng ký.";
+                return RedirectToAction("Cart");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa đăng ký.";
+                return RedirectToAction("Cart");
+            }
         }
     }
 }
