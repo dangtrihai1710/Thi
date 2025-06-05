@@ -1,4 +1,4 @@
-﻿// Thi/Data/ApplicationDbContext.cs
+﻿// Thi/Models/ApplicationDbContext.cs - Đã sửa đường dẫn ảnh
 using Microsoft.EntityFrameworkCore;
 using Thi.Models;
 
@@ -58,8 +58,8 @@ namespace Thi.Data
                     MaSV = "2280600791",
                     HoTen = "Đặng Trí Hải",
                     GioiTinh = "Nam",
-                    NgaySinh = new DateTime(2004, 10, 17), // Sửa lại thứ tự: năm, tháng, ngày
-                    Hinh = "/Content/images/sv1.jpg",
+                    NgaySinh = new DateTime(2004, 10, 17),
+                    Hinh = "/images/sv1.jpg", 
                     MaNganh = "CNTT"
                 },
                 new SinhVien
@@ -68,7 +68,7 @@ namespace Thi.Data
                     HoTen = "Nguyễn Thị B",
                     GioiTinh = "Nữ",
                     NgaySinh = new DateTime(2000, 3, 7),
-                    Hinh = "/Content/images/sv2.jpg",
+                    Hinh = "/images/sv2.jpg", 
                     MaNganh = "QTKD"
                 }
             );
